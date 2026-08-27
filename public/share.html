@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transmitir - G4 Lives</title>
+    <link rel="stylesheet" href="share.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="share-page-container">
+        <div class="transmit-modal">
+            <div class="modal-header">
+                <h3>Transmitir</h3>
+            </div>
+
+            <div class="modal-body-grid">
+                <!-- Coluna da Tela -->
+                <div class="transmit-col">
+                    <div class="col-header-tab active">TELA</div>
+
+                    <div class="form-group">
+                        <label>Qualidade</label>
+                        <select id="qualitySelect" class="custom-select">
+                            <option value="1440">Ultra — 1440p (2K)</option>
+                            <option value="1080">Ótima — 8 Mbps (1080p)</option>
+                            <option value="720" selected>Boa — 2,5 Mbps (720p)</option>
+                            <option value="480">Fluida — 480p</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Quadros</label>
+                        <select id="fpsSelect" class="custom-select">
+                            <option value="60">60 fps</option>
+                            <option value="30" selected>30 fps</option>
+                        </select>
+                    </div>
+
+                    <div class="preview-box">
+                        <video id="previewScreen" autoplay playsinline muted></video>
+                        <span id="previewScreenText">Sem preview</span>
+                    </div>
+
+                    <p class="audio-tip">Marque "Compartilhar o áudio" na janela do navegador para levar o som.</p>
+
+                    <button id="btnStartScreen" class="btn-action primary">
+                        <span>Escolher tela e transmitir</span>
+                    </button>
+                </div>
+
+                <!-- Coluna da Câmera -->
+                <div class="transmit-col">
+                    <div class="col-header-tab">CÂMERA</div>
+
+                    <div class="preview-box large-preview">
+                        <video id="previewCam" autoplay playsinline muted></video>
+                        <span id="previewCamText">Sem preview</span>
+                    </div>
+
+                    <button id="btnStartCam" class="btn-action primary" style="margin-top: auto;">
+                        <span>Ligar a câmera</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="modal-footer-notice">
+                Mantenha esta aba aberta enquanto transmite. Você pode voltar para o Discord — a transmissão continua.
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts da transmissão WebRTC -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <script type="module" src="share.js"></script>
+</body>
+</html>

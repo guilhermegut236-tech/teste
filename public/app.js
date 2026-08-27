@@ -3,60 +3,76 @@ import { DiscordSDK } from 'https://esm.sh/@discord/embedded-app-sdk';
 const DISCORD_CLIENT_ID = '1542386414463877231';
 let discordSdk = null;
 
-const btnCompartilhar = document.getElementById('btnCompartilhar');
+const viewConnecting = document.getElementById('viewConnecting');
+const viewRoomIdle = document.getElementById('viewRoomIdle');
+const viewStreamActive = document.getElementById('viewStreamActive');
 const videoGrid = document.getElementById('videoGrid');
-const emptyState = document.getElementById('emptyState');
-const statusText = document.getElementById('statusText');
-const statusDot = document.getElementById('statusDot');
-const liveBadge = document.getElementById('liveBadge');
-const qualitySelect = document.getElementById('qualitySelect');
-const fpsSelect = document.getElementById('fpsSelect');
+const userNameBadge = document.getElementById('userNameBadge');
 
-const socket = io('/'); 
-const peer = new Peer({ host: 'peerjs.com', port: 443, secure: true }); 
+const socket = io('/');
+const peer = new Peer({ host: 'peerjs.com', port: 443, secure: true });
 
-let streamLocal = null;
 let meuPeerId = null;
 let roomId = "g4-lives-room";
-let activeStreamsCount = 0;
+let currentUserName = "G4";
 
-// Elemento da transmissão local
-const meuVideoCard = document.createElement('div');
-meuVideoCard.className = 'video-card';
-const meuVideo = document.createElement('video');
-meuVideo.muted = true;
-meuVideo.playsInline = true;
-const meuTag = document.createElement('div');
-meuTag.className = 'video-tag';
-meuTag.innerText = 'Sua Transmissão';
-meuVideoCard.appendChild(meuVideo);
-meuVideoCard.appendChild(meuTag);
+function mostrarTela(tela) {
+    viewConnecting.style.display = 'none';
+    viewRoomIdle.style.display = 'none';
+    viewStreamActive.style.display = 'none';
 
-function atualizarEstadoVisual() {
-    if (activeStreamsCount > 0) {
-        emptyState.style.display = 'none';
-        videoGrid.style.display = 'grid';
-        liveBadge.style.display = 'inline-block';
+    if (tela === 'connecting') viewConnecting.style.display = 'flex';
+    if (tela === 'idle') viewRoomIdle.style.display = 'flex';
+    if (tela === 'stream') viewStreamActive.style.display = 'flex';
+}
+
+// Abrir a página de transmissão no navegador externo
+function abrirPaginaDeCapturaNoNavegador() {
+    const shareUrl = `${window.location.origin}/share.html?room=${roomId}&uid=${meuPeerId}&name=${encodeURIComponent(currentUserName)}`;
+    
+    // Se estiver no Discord, tenta abrir via SDK ou popup
+    if (discordSdk) {
+        discordSdk.commands.openExternalLink({ url: shareUrl }).catch(() => {
+            window.open(shareUrl, '_blank');
+        });
     } else {
-        emptyState.style.display = 'flex';
-        videoGrid.style.display = 'none';
-        liveBadge.style.display = 'none';
+        window.open(shareUrl, '_blank');
     }
 }
+
+// Configura os botões da pílula
+document.getElementById('btnOpenSharePage1').onclick = abrirPaginaDeCapturaNoNavegador;
+document.getElementById('btnOpenSharePageCam1').onclick = abrirPaginaDeCapturaNoNavegador;
+document.getElementById('btnOpenSharePage2').onclick = abrirPaginaDeCapturaNoNavegador;
+document.getElementById('btnOpenSharePageCam2').onclick = abrirPaginaDeCapturaNoNavegador;
 
 async function setupDiscord() {
     try {
         discordSdk = new DiscordSDK(DISCORD_CLIENT_ID);
         await discordSdk.ready();
-        
+
         if (discordSdk.channelId) {
             roomId = discordSdk.channelId;
         }
 
-        statusText.innerText = "Conectado ao Discord";
-    } catch (error) {
-        console.warn("Rodando fora do Discord SDK:", error);
-        statusText.innerText = "Pronto para transmitir";
+        const auth = await discordSdk.commands.authorize({
+            client_id: DISCORD_CLIENT_ID,
+            response_type: "code",
+            state: "",
+            prompt: "none",
+            scope: ["identify", "guilds"]
+        });
+
+        if (auth && auth.user) {
+            currentUserName = auth.user.username;
+            userNameBadge.innerText = currentUserName;
+        }
+    } catch (e) {
+        console.warn("Fora do Discord:", e);
+    } finally {
+        setTimeout(() => {
+            mostrarTela('idle');
+        }, 1000);
     }
 }
 
@@ -65,122 +81,29 @@ peer.on('open', id => {
     socket.emit('join-room', roomId, meuPeerId);
 });
 
-socket.on('user-connected', userId => {
-    if (streamLocal) {
-        conectarParaNovoUsuario(userId, streamLocal);
-    }
-});
-
+// Quando o navegador externo (ou outro amigo) transmite e liga para a sala
 peer.on('call', call => {
-    call.answer(streamLocal); 
+    call.answer(); // Apenas assiste (recebe o vídeo)
     
-    const cardRemoto = document.createElement('div');
-    cardRemoto.className = 'video-card';
-    const videoRemoto = document.createElement('video');
-    videoRemoto.playsInline = true;
-    const tagRemoto = document.createElement('div');
-    tagRemoto.className = 'video-tag';
-    tagRemoto.innerText = 'Amigo ao Vivo';
+    const card = document.createElement('div');
+    card.className = 'video-card';
+    const video = document.createElement('video');
+    video.autoplay = true;
+    video.playsInline = true;
     
-    cardRemoto.appendChild(videoRemoto);
-    cardRemoto.appendChild(tagRemoto);
+    card.appendChild(video);
     
-    call.on('stream', streamAmigo => {
-        adicionarVideoCard(cardRemoto, videoRemoto, streamAmigo);
+    call.on('stream', streamTransmissao => {
+        video.srcObject = streamTransmissao;
+        videoGrid.innerHTML = '';
+        videoGrid.appendChild(card);
+        mostrarTela('stream');
     });
 
     call.on('close', () => {
-        cardRemoto.remove();
-        activeStreamsCount--;
-        atualizarEstadoVisual();
+        card.remove();
+        mostrarTela('idle');
     });
 });
 
-btnCompartilhar.addEventListener('click', async () => {
-    if (streamLocal) {
-        stopStream();
-        return;
-    }
-
-    try {
-        const quality = parseInt(qualitySelect.value);
-        const fps = parseInt(fpsSelect.value);
-
-        let idealWidth = 1920;
-        if (quality === 1440) idealWidth = 2560;
-        else if (quality === 1080) idealWidth = 1920;
-        else if (quality === 720) idealWidth = 1280;
-        else if (quality === 480) idealWidth = 854;
-
-        streamLocal = await navigator.mediaDevices.getDisplayMedia({
-            video: {
-                cursor: "always",
-                frameRate: { ideal: fps, max: fps },
-                width: { ideal: idealWidth },
-                height: { ideal: quality }
-            },
-            audio: true
-        });
-
-        adicionarVideoCard(meuVideoCard, meuVideo, streamLocal);
-        
-        btnCompartilhar.querySelector('span').innerText = "Parar Transmissão";
-        btnCompartilhar.classList.add('streaming');
-
-        streamLocal.getVideoTracks()[0].onended = () => {
-            stopStream();
-        };
-
-    } catch (erro) {
-        console.error("Erro ao capturar tela:", erro);
-    }
-});
-
-function stopStream() {
-    if (streamLocal) {
-        streamLocal.getTracks().forEach(t => t.stop());
-        streamLocal = null;
-    }
-    meuVideoCard.remove();
-    btnCompartilhar.querySelector('span').innerText = "Começar a Transmitir";
-    btnCompartilhar.classList.remove('streaming');
-    activeStreamsCount--;
-    atualizarEstadoVisual();
-}
-
-function conectarParaNovoUsuario(userId, stream) {
-    const call = peer.call(userId, stream);
-    const cardRemoto = document.createElement('div');
-    cardRemoto.className = 'video-card';
-    const videoRemoto = document.createElement('video');
-    videoRemoto.playsInline = true;
-    const tagRemoto = document.createElement('div');
-    tagRemoto.className = 'video-tag';
-    tagRemoto.innerText = 'Amigo ao Vivo';
-    
-    cardRemoto.appendChild(videoRemoto);
-    cardRemoto.appendChild(tagRemoto);
-    
-    call.on('stream', streamAmigo => {
-        adicionarVideoCard(cardRemoto, videoRemoto, streamAmigo);
-    });
-
-    call.on('close', () => {
-        cardRemoto.remove();
-        activeStreamsCount--;
-        atualizarEstadoVisual();
-    });
-}
-
-function adicionarVideoCard(card, elementoVideo, stream) {
-    elementoVideo.srcObject = stream;
-    elementoVideo.addEventListener('loadedmetadata', () => {
-        elementoVideo.play();
-    });
-    videoGrid.appendChild(card);
-    activeStreamsCount++;
-    atualizarEstadoVisual();
-}
-
-atualizarEstadoVisual();
 setupDiscord();
