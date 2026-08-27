@@ -1,9 +1,12 @@
 :root {
-    --bg: #111214;
-    --card-bg: #1e1f22;
-    --accent: #5865f2;
+    --bg: #0f1012;
+    --card: #18191c;
+    --border: rgba(255, 255, 255, 0.08);
+    --brand: #5865f2;
+    --brand-hover: #4752c4;
     --danger: #da373c;
-    --text-white: #ffffff;
+    --success: #23a55a;
+    --text: #f2f3f5;
     --text-muted: #949ba4;
 }
 
@@ -18,7 +21,7 @@ html, body {
     width: 100vw;
     height: 100vh;
     background-color: var(--bg);
-    color: var(--text-white);
+    color: var(--text);
     overflow: hidden;
     user-select: none;
 }
@@ -26,8 +29,9 @@ html, body {
 .app-container {
     width: 100%;
     height: 100%;
-    position: relative;
     display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .screen-view {
@@ -35,73 +39,149 @@ html, body {
     height: 100%;
     display: flex;
     flex-direction: column;
-}
-
-.center-screen {
     align-items: center;
     justify-content: center;
-    position: relative;
+}
+
+/* CARD CENTRAL NO DISCORD */
+.launch-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px 36px;
+    max-width: 480px;
+    width: 90%;
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
 }
 
-.monitor-icon {
-    margin-bottom: 16px;
-    animation: float 3s ease-in-out infinite;
+.badge-tag {
+    background: rgba(88, 101, 242, 0.15);
+    color: #808bf5;
+    font-size: 11px;
+    font-weight: 800;
+    padding: 4px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.8px;
+    margin-bottom: 14px;
+    border: 1px solid rgba(88, 101, 242, 0.3);
 }
 
-@keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-6px); }
-}
-
-.connecting-title {
+.launch-card h2 {
     font-size: 22px;
+    font-weight: 800;
+    margin-bottom: 8px;
+}
+
+.desc-text {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin-bottom: 24px;
+}
+
+/* BOTÃO ABRIR NO NAVEGADOR */
+.btn-launch-browser {
+    width: 100%;
+    background-color: var(--brand);
+    color: #fff;
+    border: none;
+    padding: 14px 20px;
+    border-radius: 8px;
+    font-size: 15px;
     font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 16px rgba(88, 101, 242, 0.4);
+    margin-bottom: 20px;
+}
+
+.btn-launch-browser:hover {
+    background-color: var(--brand-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(88, 101, 242, 0.5);
+}
+
+/* CAIXA DE LINK DIRETO */
+.direct-link-box {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px;
+    text-align: left;
+    margin-bottom: 18px;
+}
+
+.direct-link-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-muted);
+    display: block;
     margin-bottom: 6px;
 }
 
-.connecting-sub {
-    font-size: 14px;
+.copy-input-group {
+    display: flex;
+    gap: 8px;
+}
+
+.copy-input-group input {
+    flex: 1;
+    background: #111214;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: #fff;
+    padding: 8px 10px;
+    font-size: 12px;
+    outline: none;
+}
+
+.copy-input-group button {
+    background: #2b2d31;
+    color: #fff;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.copy-input-group button:hover {
+    background: #35373c;
+}
+
+.status-footer {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
     color: var(--text-muted);
 }
 
-/* Pílula de botões flutuantes */
-.bottom-pill-controls {
-    position: absolute;
-    bottom: 30px;
-    background: #1e1f22;
-    padding: 6px;
-    border-radius: 30px;
-    display: flex;
-    gap: 10px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.pill-btn {
-    width: 48px;
-    height: 48px;
+.status-dot {
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
-    background-color: #2b2d31;
-    border: none;
-    color: var(--text-white);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    text-decoration: none;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    background: var(--success);
+    box-shadow: 0 0 8px rgba(35, 165, 90, 0.6);
 }
 
-.pill-btn:hover {
-    background-color: var(--accent);
-    transform: scale(1.08);
-}
-
-/* Transmissão ativa */
+/* TELA CHEIA DA TRANSMISSÃO NO DISCORD */
 .stream-view {
     position: relative;
     background: #000;
+    width: 100%;
+    height: 100%;
 }
 
 .video-grid {
@@ -125,4 +205,34 @@ html, body {
     height: 100%;
     object-fit: contain;
     background: #000;
+}
+
+.stream-info-overlay {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.live-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--danger);
+    animation: blink 1.5s infinite;
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
 }

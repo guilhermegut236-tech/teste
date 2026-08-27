@@ -3,13 +3,13 @@ import { DiscordSDK } from 'https://esm.sh/@discord/embedded-app-sdk';
 const DISCORD_CLIENT_ID = '1542386414463877231';
 let discordSdk = null;
 
-const viewConnecting = document.getElementById('viewConnecting');
+const viewMain = document.getElementById('viewMain');
 const viewStreamActive = document.getElementById('viewStreamActive');
 const videoGrid = document.getElementById('videoGrid');
 const statusLabel = document.getElementById('statusLabel');
-
-const linkShareScreen = document.getElementById('linkShareScreen');
-const linkShareCam = document.getElementById('linkShareCam');
+const inputShareLink = document.getElementById('inputShareLink');
+const btnCopyLink = document.getElementById('btnCopyLink');
+const btnLaunchBrowser = document.getElementById('btnLaunchBrowser');
 
 const socket = io();
 const peer = new Peer({ host: 'peerjs.com', port: 443, secure: true });
@@ -17,24 +17,37 @@ const peer = new Peer({ host: 'peerjs.com', port: 443, secure: true });
 let meuPeerId = null;
 let roomId = "g4-lives-room";
 
-function atualizarLinks() {
-    const baseUrl = `${window.location.origin}/share.html?room=${roomId}&uid=${meuPeerId || ''}`;
-    linkShareScreen.href = `${baseUrl}&fonte=tela`;
-    linkShareCam.href = `${baseUrl}&fonte=camera`;
+function gerarUrlCaptura() {
+    const origin = window.location.origin;
+    return `${origin}/share.html?room=${roomId}&uid=${meuPeerId || ''}`;
 }
 
-// Fallback de clique caso o target _blank seja barrado dentro de iframes
-function tratarAbertura(e) {
+function atualizarInterfaceLink() {
+    const url = gerarUrlCaptura();
+    inputShareLink.value = url;
+}
+
+// 1. ABRIR NO NAVEGADOR VIA BOTÃO
+btnLaunchBrowser.addEventListener('click', () => {
+    const url = gerarUrlCaptura();
+    
+    // Tenta abrir pelo comando oficial do Discord SDK
     if (discordSdk) {
-        e.preventDefault();
-        discordSdk.commands.openExternalLink({ url: this.href }).catch(() => {
-            window.open(this.href, '_blank');
+        discordSdk.commands.openExternalLink({ url: url }).catch(() => {
+            window.open(url, '_blank');
         });
+    } else {
+        window.open(url, '_blank');
     }
-}
+});
 
-linkShareScreen.addEventListener('click', tratarAbertura);
-linkShareCam.addEventListener('click', tratarAbertura);
+// 2. COPIAR LINK CASO DESEJE
+btnCopyLink.addEventListener('click', () => {
+    navigator.clipboard.writeText(inputShareLink.value).then(() => {
+        btnCopyLink.innerText = "Copiado!";
+        setTimeout(() => { btnCopyLink.innerText = "Copiar"; }, 2000);
+    });
+});
 
 async function setupDiscord() {
     try {
@@ -43,25 +56,25 @@ async function setupDiscord() {
 
         if (discordSdk.channelId) {
             roomId = discordSdk.channelId;
-            atualizarLinks();
+            atualizarInterfaceLink();
         }
 
-        statusLabel.innerText = "Conectado ao Discord. Clique abaixo para transmitir!";
+        statusLabel.innerText = "Conectado ao canal. Aguardando transmissão...";
     } catch (e) {
         console.warn("Fora do Discord:", e);
-        statusLabel.innerText = "Clique abaixo para abrir a tela de transmissão";
+        statusLabel.innerText = "Modo de Teste. Aguardando transmissão...";
     }
 }
 
 peer.on('open', id => {
     meuPeerId = id;
-    atualizarLinks();
+    atualizarInterfaceLink();
     socket.emit('join-room', roomId, meuPeerId);
 });
 
-// Quando o navegador externo (ou outro amigo) transmite
+// 3. RECEPTOR DE VÍDEO NO DISCORD: Quando o navegador externo (share.html) transmite a tela
 peer.on('call', call => {
-    call.answer(); // Atende apenas como espectador (recebendo o vídeo)
+    call.answer(); // Recebe o vídeo como espectador
     
     const card = document.createElement('div');
     card.className = 'video-card';
@@ -76,16 +89,16 @@ peer.on('call', call => {
         videoGrid.innerHTML = '';
         videoGrid.appendChild(card);
         
-        viewConnecting.style.display = 'none';
+        // Esconde o painel e mostra o vídeo recebido em tela cheia no Discord
+        viewMain.style.display = 'none';
         viewStreamActive.style.display = 'flex';
     });
 
     call.on('close', () => {
         card.remove();
         viewStreamActive.style.display = 'none';
-        viewConnecting.style.display = 'flex';
+        viewMain.style.display = 'flex';
     });
 });
 
 setupDiscord();
-atualizarLinks();
