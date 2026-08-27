@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>G4 Lives</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Barra Superior -->
+        <header class="app-header">
+            <div class="brand">
+                <div class="brand-logo">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                    </svg>
+                </div>
+                <div class="brand-text">
+                    <h2>G4 Lives</h2>
+                    <span class="badge-live" id="liveBadge" style="display: none;">AO VIVO</span>
+                </div>
+            </div>
+
+            <div class="header-status">
+                <span class="status-indicator" id="statusDot"></span>
+                <span id="statusText">Conectando ao Discord...</span>
+            </div>
+        </header>
+
+        <!-- Área Principal de Transmissão / Grade de Vídeos -->
+        <main class="stream-viewport">
+            <div id="emptyState" class="empty-state">
+                <div class="empty-icon">
+                    <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                        <line x1="8" y1="21" x2="16" y2="21"></line>
+                        <line x1="12" y1="17" x2="12" y2="21"></line>
+                    </svg>
+                </div>
+                <h3>Nenhuma transmissão no momento</h3>
+                <p>Compartilhe sua tela ou assista à transmissão de outros amigos na sala.</p>
+            </div>
+
+            <div id="videoGrid" class="video-grid"></div>
+        </main>
+
+        <!-- Barra Inferior de Controles -->
+        <footer class="app-controls-bar">
+            <div class="controls-left">
+                <!-- Seletor de Resolução -->
+                <div class="setting-item">
+                    <label for="qualitySelect">Resolução</label>
+                    <select id="qualitySelect" class="styled-select">
+                        <option value="1440">2K — 1440p (Ultra)</option>
+                        <option value="1080" selected>FHD — 1080p</option>
+                        <option value="720">HD — 720p</option>
+                        <option value="480">SD — 480p</option>
+                    </select>
+                </div>
+
+                <!-- Seletor Independente de FPS -->
+                <div class="setting-item">
+                    <label for="fpsSelect">Taxa de Quadros</label>
+                    <select id="fpsSelect" class="styled-select">
+                        <option value="60" selected>60 FPS</option>
+                        <option value="30">30 FPS</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="controls-center">
+                <button id="btnCompartilhar" class="btn-primary" disabled>
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M13 3H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-3"></path>
+                        <polyline points="8 21 12 17 16 21"></polyline>
+                        <line x1="12" y1="17" x2="12" y2="21"></line>
+                        <path d="M17 8l5-5-5-5"></path>
+                        <path d="M22 3h-6a4 4 0 0 0-4 4v4"></path>
+                    </svg>
+                    <span>Começar a Transmitir</span>
+                </button>
+            </div>
+
+            <div class="controls-right">
+                <div class="participant-count">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                    <span id="participantCount">1 na sala</span>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Bibliotecas -->
+    <script src="https://unpkg.com/@discord/embedded-app-sdk@1.2.0/lib/discord_sdk.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <script type="module" src="app.js"></script>
+</body>
+</html>
