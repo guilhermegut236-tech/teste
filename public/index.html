@@ -5,48 +5,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>G4 Lives - Receptor</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="app-container">
-        
-        <!-- PAINEL PRINCIPAL DENTRO DO DISCORD -->
+        <!-- PAINEL PRINCIPAL (DENTRO DO DISCORD) -->
         <div id="viewMain" class="screen-view center-screen">
             <div class="launch-card">
                 <div class="badge-tag">G4 LIVES • RECEPTOR</div>
-                
                 <h2>Transmitir sua Tela</h2>
-                <p class="desc-text">O Discord vai receber e exibir o vídeo aqui. Clique no botão abaixo para abrir a central de captura no seu navegador:</p>
+                <p class="desc-text">O Discord exibirá o vídeo aqui. Clique no botão abaixo para abrir a captura no seu navegador:</p>
 
-                <!-- BOTÃO PRINCIPAL DE REDIRECIONAMENTO -->
-                <button class="btn-launch-browser" id="btnLaunchBrowser">
-                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2">
+                <!-- LINK DIRETO NATIVO DO HTML -->
+                <a href="https://g4-live.onrender.com/share.html" target="_blank" class="btn-launch-browser" id="btnLaunchBrowser">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
                         <polyline points="15 3 21 3 21 9"></polyline>
                         <line x1="10" y1="14" x2="21" y2="3"></line>
                     </svg>
                     <span>Abrir Captura no Navegador</span>
-                </button>
+                </a>
 
-                <!-- LINK DIRETO / COPIAR CASO O DISCORD BLOQUEIE POPUP -->
                 <div class="direct-link-box">
-                    <span class="direct-link-label">Ou copie o link da sua sala:</span>
+                    <span class="direct-link-label">Link direto:</span>
                     <div class="copy-input-group">
-                        <input type="text" id="inputShareLink" readonly value="Gerando link da sala...">
+                        <input type="text" id="inputShareLink" value="https://g4-live.onrender.com/share.html" readonly>
                         <button id="btnCopyLink">Copiar</button>
                     </div>
                 </div>
 
                 <div class="status-footer">
-                    <span class="status-dot connected"></span>
+                    <span class="status-dot"></span>
                     <span id="statusLabel">Aguardando transmissão...</span>
                 </div>
             </div>
         </div>
 
-        <!-- RECEPTOR DE VÍDEO (AO VIVO EM TELA CHEIA NO DISCORD) -->
+        <!-- RECEPTOR DE VÍDEO (AO VIVO NO DISCORD) -->
         <div id="viewStreamActive" class="screen-view stream-view" style="display: none;">
             <div id="videoGrid" class="video-grid"></div>
             <div class="stream-info-overlay">
@@ -54,10 +48,9 @@
                 <span>AO VIVO NO DISCORD</span>
             </div>
         </div>
-
     </div>
 
-    <!-- Bibliotecas WebRTC e Socket -->
+    <!-- Scripts sem bloqueio -->
     <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <script type="module" src="app.js"></script>

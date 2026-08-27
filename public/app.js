@@ -1,47 +1,24 @@
-import { DiscordSDK } from 'https://esm.sh/@discord/embedded-app-sdk';
-
-const DISCORD_CLIENT_ID = '1542386414463877231';
-let discordSdk = null;
+// Inicialização Socket e PeerJS
+const socket = io();
+const peer = new Peer({ host: 'peerjs.com', port: 443, secure: true });
 
 const viewMain = document.getElementById('viewMain');
 const viewStreamActive = document.getElementById('viewStreamActive');
 const videoGrid = document.getElementById('videoGrid');
-const statusLabel = document.getElementById('statusLabel');
 const inputShareLink = document.getElementById('inputShareLink');
 const btnCopyLink = document.getElementById('btnCopyLink');
 const btnLaunchBrowser = document.getElementById('btnLaunchBrowser');
 
-const socket = io();
-const peer = new Peer({ host: 'peerjs.com', port: 443, secure: true });
-
+const roomId = "g4-lives-room";
 let meuPeerId = null;
-let roomId = "g4-lives-room";
 
-function gerarUrlCaptura() {
+function atualizarLink() {
     const origin = window.location.origin;
-    return `${origin}/share.html?room=${roomId}&uid=${meuPeerId || ''}`;
-}
-
-function atualizarInterfaceLink() {
-    const url = gerarUrlCaptura();
+    const url = `${origin}/share.html?room=${roomId}&uid=${meuPeerId || ''}`;
     inputShareLink.value = url;
+    btnLaunchBrowser.href = url;
 }
 
-// 1. ABRIR NO NAVEGADOR VIA BOTÃO
-btnLaunchBrowser.addEventListener('click', () => {
-    const url = gerarUrlCaptura();
-    
-    // Tenta abrir pelo comando oficial do Discord SDK
-    if (discordSdk) {
-        discordSdk.commands.openExternalLink({ url: url }).catch(() => {
-            window.open(url, '_blank');
-        });
-    } else {
-        window.open(url, '_blank');
-    }
-});
-
-// 2. COPIAR LINK CASO DESEJE
 btnCopyLink.addEventListener('click', () => {
     navigator.clipboard.writeText(inputShareLink.value).then(() => {
         btnCopyLink.innerText = "Copiado!";
@@ -49,32 +26,15 @@ btnCopyLink.addEventListener('click', () => {
     });
 });
 
-async function setupDiscord() {
-    try {
-        discordSdk = new DiscordSDK(DISCORD_CLIENT_ID);
-        await discordSdk.ready();
-
-        if (discordSdk.channelId) {
-            roomId = discordSdk.channelId;
-            atualizarInterfaceLink();
-        }
-
-        statusLabel.innerText = "Conectado ao canal. Aguardando transmissão...";
-    } catch (e) {
-        console.warn("Fora do Discord:", e);
-        statusLabel.innerText = "Modo de Teste. Aguardando transmissão...";
-    }
-}
-
 peer.on('open', id => {
     meuPeerId = id;
-    atualizarInterfaceLink();
+    atualizarLink();
     socket.emit('join-room', roomId, meuPeerId);
 });
 
-// 3. RECEPTOR DE VÍDEO NO DISCORD: Quando o navegador externo (share.html) transmite a tela
+// RECEPTOR DO DISCORD: Quando o share.html começa a transmitir no navegador
 peer.on('call', call => {
-    call.answer(); // Recebe o vídeo como espectador
+    call.answer(); // Recebe o vídeo
     
     const card = document.createElement('div');
     card.className = 'video-card';
@@ -89,7 +49,6 @@ peer.on('call', call => {
         videoGrid.innerHTML = '';
         videoGrid.appendChild(card);
         
-        // Esconde o painel e mostra o vídeo recebido em tela cheia no Discord
         viewMain.style.display = 'none';
         viewStreamActive.style.display = 'flex';
     });
@@ -101,4 +60,4 @@ peer.on('call', call => {
     });
 });
 
-setupDiscord();
+atualizarLink();
