@@ -1,15 +1,10 @@
 :root {
-    --bg: #0e0f10;
+    --bg: #111214;
     --card-bg: #1e1f22;
-    --box-bg: #141517;
-    --border: #2b2d31;
     --accent: #5865f2;
-    --accent-hover: #4752c4;
     --danger: #da373c;
-    --danger-hover: #a12828;
     --text-white: #ffffff;
     --text-muted: #949ba4;
-    --text-subtle: #6d7078;
 }
 
 * {
@@ -46,40 +41,46 @@ html, body {
     align-items: center;
     justify-content: center;
     position: relative;
+    text-align: center;
 }
 
-/* ================= 1. TELA CONECTANDO ================= */
 .monitor-icon {
-    margin-bottom: 20px;
+    margin-bottom: 16px;
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
 }
 
 .connecting-title {
-    font-size: 20px;
+    font-size: 22px;
     font-weight: 700;
     margin-bottom: 6px;
 }
 
 .connecting-sub {
-    font-size: 13px;
+    font-size: 14px;
     color: var(--text-muted);
 }
 
-/* ================= 2. PÍLULA FLUTUANTE DE BOTÕES ================= */
+/* Pílula de botões flutuantes */
 .bottom-pill-controls {
     position: absolute;
-    bottom: 24px;
+    bottom: 30px;
     background: #1e1f22;
     padding: 6px;
-    border-radius: 28px;
+    border-radius: 30px;
     display: flex;
-    gap: 8px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    gap: 10px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .pill-btn {
-    width: 44px;
-    height: 44px;
+    width: 48px;
+    height: 48px;
     border-radius: 50%;
     background-color: #2b2d31;
     border: none;
@@ -88,59 +89,16 @@ html, body {
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: background 0.2s, transform 0.1s;
+    text-decoration: none;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .pill-btn:hover {
-    background-color: #35373c;
-    transform: scale(1.05);
+    background-color: var(--accent);
+    transform: scale(1.08);
 }
 
-.pill-btn.danger {
-    background-color: var(--danger);
-}
-
-.pill-btn.danger:hover {
-    background-color: var(--danger-hover);
-}
-
-/* ================= 3. AVATAR CENTRAL QUANDO NA SALA ================= */
-.user-avatar-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-}
-
-.user-avatar {
-    width: 90px;
-    height: 90px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #3ba55c, #5865f2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-    font-weight: 800;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
-    background-size: cover;
-    background-position: center;
-}
-
-.user-badge {
-    position: absolute;
-    bottom: -12px;
-    left: -20px;
-    background: #111214;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    padding: 3px 8px;
-    border-radius: 4px;
-    font-size: 11px;
-    font-weight: 700;
-}
-
-/* ================= 4. STREAM VIEW (VÍDEO EM TELA CHEIA) ================= */
+/* Transmissão ativa */
 .stream-view {
     position: relative;
     background: #000;
@@ -160,7 +118,6 @@ html, body {
     display: flex;
     align-items: center;
     justify-content: center;
-    position: relative;
 }
 
 .video-card video {
@@ -168,164 +125,4 @@ html, body {
     height: 100%;
     object-fit: contain;
     background: #000;
-}
-
-.stream-floating-bar {
-    position: absolute;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-}
-
-/* ================= 5. MODAL DE CONFIGURAÇÃO (GO LIVE) ================= */
-.modal-backdrop {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(0, 0, 0, 0.75);
-    backdrop-filter: blur(4px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 999;
-}
-
-.transmit-modal {
-    background: #1e1f22;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 10px;
-    width: 92%;
-    max-width: 680px;
-    padding: 24px;
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
-    box-shadow: 0 16px 36px rgba(0,0,0,0.7);
-}
-
-.modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-    padding-bottom: 12px;
-}
-
-.modal-header h3 {
-    font-size: 16px;
-    font-weight: 700;
-}
-
-.close-modal {
-    background: transparent;
-    border: none;
-    color: var(--text-muted);
-    font-size: 24px;
-    cursor: pointer;
-}
-
-.close-modal:hover {
-    color: #fff;
-}
-
-.modal-body-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-}
-
-.transmit-col {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.col-header-tab {
-    font-size: 11px;
-    font-weight: 800;
-    color: var(--accent);
-    letter-spacing: 0.5px;
-    border-bottom: 2px solid var(--accent);
-    padding-bottom: 4px;
-    width: fit-content;
-}
-
-.form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.form-group label {
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--text-muted);
-}
-
-.custom-select {
-    background: #111214;
-    color: #fff;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    padding: 8px 12px;
-    border-radius: 4px;
-    font-size: 13px;
-    outline: none;
-    cursor: pointer;
-}
-
-.preview-box {
-    background: #111214;
-    border-radius: 6px;
-    height: 120px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--text-subtle);
-    font-size: 12px;
-    position: relative;
-    overflow: hidden;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.preview-box.large-preview {
-    height: 200px;
-}
-
-.preview-box video {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: none;
-}
-
-.audio-tip {
-    font-size: 11px;
-    color: var(--text-subtle);
-    line-height: 1.3;
-}
-
-.btn-action {
-    background-color: var(--accent);
-    color: #fff;
-    border: none;
-    padding: 10px;
-    border-radius: 4px;
-    font-size: 13px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: background 0.2s;
-}
-
-.btn-action:hover {
-    background-color: var(--accent-hover);
-}
-
-.modal-footer-notice {
-    font-size: 11px;
-    color: var(--text-subtle);
-    border-top: 1px solid rgba(255, 255, 255, 0.06);
-    padding-top: 10px;
-    text-align: center;
 }

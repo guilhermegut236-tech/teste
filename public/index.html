@@ -12,70 +12,45 @@
 <body>
     <div class="app-container">
         
-        <!-- 1. TELA: CONECTANDO -->
-        <div id="viewConnecting" class="screen-view center-screen active">
+        <!-- 1. TELA: CONECTANDO / SALA -->
+        <div id="viewConnecting" class="screen-view center-screen">
             <div class="monitor-icon">
-                <svg viewBox="0 0 24 24" width="48" height="48" fill="none">
-                    <rect x="2" y="3" width="20" height="14" rx="2" fill="#202225" stroke="#3ba55c" stroke-width="1.8"/>
+                <svg viewBox="0 0 24 24" width="54" height="54" fill="none">
+                    <rect x="2" y="3" width="20" height="14" rx="2" fill="#202225" stroke="#3ba55c" stroke-width="2"/>
                     <rect x="4" y="5" width="16" height="10" rx="1" fill="#5865f2" opacity="0.8"/>
                     <path d="M8 21h8m-4-4v4" stroke="#4e5058" stroke-width="2" stroke-linecap="round"/>
                 </svg>
             </div>
-            <h2 class="connecting-title">Conectando...</h2>
-            <p class="connecting-sub">Entrando na sala</p>
+            <h2 class="connecting-title">G4 Lives</h2>
+            <p class="connecting-sub" id="statusLabel">Clique abaixo para iniciar a transmissão</p>
 
+            <!-- Pílula de botões flutuantes -->
             <div class="bottom-pill-controls">
-                <button class="pill-btn" id="btnOpenSharePage1" title="Compartilhar tela">
-                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                <a class="pill-btn" id="linkShareScreen" target="_blank" title="Compartilhar tela">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
                         <rect x="2" y="3" width="20" height="14" rx="2"></rect>
                         <line x1="8" y1="21" x2="16" y2="21"></line>
                         <line x1="12" y1="17" x2="12" y2="21"></line>
                     </svg>
-                </button>
-                <button class="pill-btn" id="btnOpenSharePageCam1" title="Ligar câmera">
-                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                </a>
+                <a class="pill-btn" id="linkShareCam" target="_blank" title="Ligar câmera">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M23 7l-7 5 7 5V7z"></path>
                         <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
                     </svg>
-                </button>
+                </a>
             </div>
         </div>
 
-        <!-- 2. TELA: SALA CONECTADA (Ninguém transmitindo ainda) -->
-        <div id="viewRoomIdle" class="screen-view center-screen" style="display: none;">
-            <div class="user-avatar-container">
-                <div class="user-avatar" id="userAvatar">
-                    <span id="avatarInitial">G4</span>
-                </div>
-                <div class="user-badge" id="userNameBadge">G4</div>
-            </div>
-
-            <div class="bottom-pill-controls">
-                <button class="pill-btn" id="btnOpenSharePage2" title="Compartilhar tela">
-                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="2" y="3" width="20" height="14" rx="2"></rect>
-                        <line x1="8" y1="21" x2="16" y2="21"></line>
-                        <line x1="12" y1="17" x2="12" y2="21"></line>
-                    </svg>
-                </button>
-                <button class="pill-btn" id="btnOpenSharePageCam2" title="Ligar câmera">
-                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M23 7l-7 5 7 5V7z"></path>
-                        <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
-                    </svg>
-                </button>
-            </div>
-        </div>
-
-        <!-- 3. TELA: TRANSMISSÃO AO VIVO (Exibindo a tela de quem transmite) -->
+        <!-- 2. TELA: TRANSMISSÃO AO VIVO (Vídeo recebido em tela cheia) -->
         <div id="viewStreamActive" class="screen-view stream-view" style="display: none;">
             <div id="videoGrid" class="video-grid"></div>
         </div>
 
     </div>
 
-    <!-- Scripts do Discord e WebRTC -->
-    <script src="/socket.io/socket.io.js"></script>
+    <!-- Bibliotecas carregadas via CDN estável -->
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <script type="module" src="app.js"></script>
 </body>
