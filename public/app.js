@@ -1,4 +1,7 @@
-const discordSdk = new DiscordSDK.DiscordSDK('1542386414463877231');
+import { DiscordSDK } from 'https://esm.sh/@discord/embedded-app-sdk';
+
+const DISCORD_CLIENT_ID = '1542386414463877231';
+let discordSdk = null;
 
 const btnCompartilhar = document.getElementById('btnCompartilhar');
 const videoGrid = document.getElementById('videoGrid');
@@ -12,12 +15,12 @@ const fpsSelect = document.getElementById('fpsSelect');
 const socket = io('/'); 
 const peer = new Peer({ host: 'peerjs.com', port: 443, secure: true }); 
 
-let streamLocal;
-let meuPeerId;
+let streamLocal = null;
+let meuPeerId = null;
 let roomId = "g4-lives-room";
 let activeStreamsCount = 0;
 
-// Cria elemento de vídeo local
+// Elemento da transmissão local
 const meuVideoCard = document.createElement('div');
 meuVideoCard.className = 'video-card';
 const meuVideo = document.createElement('video');
@@ -43,6 +46,7 @@ function atualizarEstadoVisual() {
 
 async function setupDiscord() {
     try {
+        discordSdk = new DiscordSDK(DISCORD_CLIENT_ID);
         await discordSdk.ready();
         
         if (discordSdk.channelId) {
@@ -50,17 +54,14 @@ async function setupDiscord() {
         }
 
         statusText.innerText = "Conectado ao Discord";
-        statusDot.classList.add('connected');
     } catch (error) {
-        console.warn("Fora do Discord SDK:", error);
-        statusText.innerText = "Modo de Teste";
-        statusDot.classList.add('connected');
+        console.warn("Rodando fora do Discord SDK:", error);
+        statusText.innerText = "Pronto para transmitir";
     }
 }
 
 peer.on('open', id => {
     meuPeerId = id;
-    btnCompartilhar.disabled = false;
     socket.emit('join-room', roomId, meuPeerId);
 });
 
@@ -102,10 +103,9 @@ btnCompartilhar.addEventListener('click', async () => {
     }
 
     try {
-        const quality = parseInt(qualitySelect.value); // 1440, 1080, 720 ou 480
-        const fps = parseInt(fpsSelect.value);         // 30 ou 60
+        const quality = parseInt(qualitySelect.value);
+        const fps = parseInt(fpsSelect.value);
 
-        // Configuração de largura ideal baseada na resolução selecionada
         let idealWidth = 1920;
         if (quality === 1440) idealWidth = 2560;
         else if (quality === 1080) idealWidth = 1920;
